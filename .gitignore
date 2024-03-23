@@ -1,0 +1,7 @@
+node_modules
+*.xlsx
+log_request.txt
+productList.txt
+.idea
+.vscode
+.DS_Store
