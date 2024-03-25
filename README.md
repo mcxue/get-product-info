@@ -5,7 +5,7 @@
 ### 1. 在飞书后台申请一个应用并配置 config.js
 
 1. 在 [开发者后台](https://open.feishu.cn/app?lang=zh-CN) 创建一个企业自建应用，可以为其取一个名字，比如"更新商品信息"
-2. 给它添加一个权限，改权限名为 "查看、评论、编辑和管理云空间中所有文件"
+2. 给它添加一个权限，该权限名为 "查看、评论、编辑和管理云空间中所有文件"
 3. 发布该应用
 4. 在基础信息中找到 "App ID" 和 "App Secret"，复制并填入 config.js 中的 "APP_ID"、"APP_SECRET"
 
@@ -20,11 +20,9 @@
 
 ### 3. 配置浏览器、登陆淘宝、配置 config.js
 
-使用该脚本需要在指定端口打开浏览器
-
-1. 配置指定端口：复制一个谷歌快捷方式，右键——属性——在目标的chrome.exe 后加上 --remote-debugging-port=9222
-2. 使用刚刚复制的快捷方式打开浏览器，打开淘宝页面并登陆
-3. 访问 http://localhost:9222/json/version 获取 webSocketDebuggerUrl，复制它并填入到 config.js 中的 "webSocketDebuggerUrl"
+1. 配置临时的浏览器数据存放的位置，填入到 config.js 中的 "myChromeDataPath"
+2. 将 config.js 中 configBrowserFlag 设置为 true，打开淘宝页面并登陆，随后关闭
+3. 将 config.js 中 configBrowserFlag 设置为 false
 
 ### 4. 填入商品的链接
 

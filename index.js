@@ -1,6 +1,5 @@
-import xlsx from 'node-xlsx'
 import * as cheerio from 'cheerio'
-// import chromePaths from 'chrome-paths'
+import chromePaths from 'chrome-paths'
 import puppeteer from 'puppeteer'
 import fetch from 'node-fetch'
 import fs from 'fs/promises'
@@ -12,7 +11,7 @@ const requiredFields = [
   'APP_SECRET',
   'SPREAD_SHEET_TOKEN',
   'SHEET_ID',
-  'webSocketDebuggerUrl'
+  'myChromeDataPath',
 ]
 
 for (let i = 0; i < requiredFields.length; i++) {
@@ -28,7 +27,8 @@ const {
   APP_SECRET,
   SPREAD_SHEET_TOKEN,
   SHEET_ID,
-  webSocketDebuggerUrl,
+  myChromeDataPath,
+  configBrowserFlag,
 } = config
 
 const LETTER_LIST = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P']
@@ -42,21 +42,19 @@ const LETTER_LIST = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
 const getId = (str) => str.split('id=')[1]
 
 let globalSinglePage = undefined
+let globalBrowser = undefined
 const getSinglePage = async () => {
   if (globalSinglePage) return globalSinglePage
-  const browser = await puppeteer.connect({
-    browserWSEndpoint: webSocketDebuggerUrl
+  const browser = await puppeteer.launch({
+    headless: true,
+    defaultViewport: {
+      width: 1300,
+      height: 900
+    },
+    args: ['--disable-infobars', `--user-data-dir=${myChromeDataPath}`],
+    executablePath: chromePaths.chrome,
   })
-  // const browser = await puppeteer.launch({
-  //   headless: true,
-  //   // args: ['--disable-infobars'],
-  //   defaultViewport: {
-  //     width: 1300,
-  //     height: 900
-  //   },
-  //   args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  //   executablePath: chromePaths.chrome,
-  // })
+  globalBrowser = browser
   globalSinglePage = await browser.newPage()
   return globalSinglePage
 }
@@ -155,7 +153,7 @@ const uploadProductList = async (productList) => {
   const startRow = startCell.slice(1)
   const endColumn = endCell[0]
   // const endRow = endCell.slice(1)
-  console.log('正在上传商品的图片信息')
+  console.log('正在上传商品的图片信息，请稍后')
   for (let i = 0; i < productList.length; i++) {
 
     for (let j = 0; j < productList[i].imgUrls.length; j++) {
@@ -203,10 +201,35 @@ const getProductInfoListFromLocal = async () => {
 }
 
 (async () => {
-  const productList = await getProductListWithUrlList(productLinks)
-  await saveProductInfoListToLocal(productList)
-  const localProductList = await getProductInfoListFromLocal()
-  await uploadProductList(localProductList)
-  console.log('完成')
-  process.exit(0)
+  try {
+    if (configBrowserFlag) {
+      console.log('有 5 分钟配置浏览器')
+      const browser = await puppeteer.launch({
+        headless: false,
+        defaultViewport: {
+          width: 1300,
+          height: 900
+        },
+        args: ['--disable-infobars', `--user-data-dir=${myChromeDataPath}`],
+        executablePath: chromePaths.chrome,
+      })
+      await sleep(300000)
+      await browser.close()
+      process.exit(0)
+    }
+    const productList = await getProductListWithUrlList(productLinks)
+    await saveProductInfoListToLocal(productList)
+    const localProductList = await getProductInfoListFromLocal()
+    await uploadProductList(localProductList)
+    if (globalBrowser) {
+      await globalBrowser.close()
+    }
+    process.exit(0)
+  } catch (e) {
+    if (globalBrowser) {
+      await globalBrowser.close()
+    }
+    process.exit(1)
+    console.log(e)
+  }
 })()
