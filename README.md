@@ -24,9 +24,9 @@
 2. 将 config.js 中 configBrowserFlag 设置为 true，打开淘宝页面并登陆，随后关闭
 3. 将 config.js 中 configBrowserFlag 设置为 false
 
-### 4. 填入商品的链接
+### 4. 添加拥有商品 id 的文件
 
-在 productLinks.js 中填入商品的链接，以数组方式呈现
+在项目中，
 
 ### 5. Node 环境配置与安装依赖
 

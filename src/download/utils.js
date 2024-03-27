@@ -10,8 +10,9 @@ let globalPage = undefined
 let globalBrowser = undefined
 
 const initBrowser = async () => {
+  const view = process.argv.some(str => str.includes('--view'))
   return await puppeteer.launch({
-    headless: true,
+    headless: !view,
     defaultViewport: {
       width: 1300,
       height: 900

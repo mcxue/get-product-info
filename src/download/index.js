@@ -1,8 +1,15 @@
 import getProductLinkList from '../getProductLinkList/index.js'
-import { getCurrentTime, getRandomNumberBetween60And120, sleep } from '../utils.js'
+import { getCurrentTime, getRandomNumber, sleep } from '../utils.js'
 import * as cheerio from 'cheerio'
 import { getBrowser, getIdFromUrl, getPage } from './utils.js'
 import saveProductDetailList from '../saveProductDetailList/index.js'
+
+const refreshLoginState = async () => {
+  const page = await getPage()
+  await page.goto('https://buyertrade.taobao.com/trade/itemlist/list_bought_items.htm')
+  console.log('已刷新登陆状态，等待6秒，请稍后')
+  await sleep(6 * 1000)
+}
 
 const getSingleProductByVisitUrl = async (url) => {
   const page = await getPage()
@@ -25,15 +32,22 @@ const getSingleProductByVisitUrl = async (url) => {
 }
 
 const getProductListWithUrlList = async (urlList) => {
+  await refreshLoginState()
   const result = []
   for (let i = 0; i < urlList.length; i++) {
     const product = await getSingleProductByVisitUrl(urlList[i])
-    console.log(`获取商品信息${i + 1}/${urlList.length} ${product.name}`)
+    await sleep(3000);
+    console.log(`已获取商品信息${i + 1}/${urlList.length} ${product.name}`)
+    if (product.name?.endsWith('...')) {
+      console.log('发现商品信息不完整，退出运行');
+      process.exit(233);
+    }
     result.push(product)
-    const randomNumber = getRandomNumberBetween60And120()
-    console.log(`${randomNumber}秒后获取下一件商品信息，请稍后....`)
-    await sleep(getRandomNumberBetween60And120() * 1000)
-
+    const randomNumber = getRandomNumber(6, 15)
+    if (i < urlList.length - 1) {
+      console.log(`${randomNumber}秒后获取下一件商品信息，请稍后....`)
+      await sleep(randomNumber * 1000)
+    }
   }
   return result
 }

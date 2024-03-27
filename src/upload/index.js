@@ -61,10 +61,12 @@ const uploadProductList = async (productList) => {
   const endColumn = endCell[0]
   console.log('正在上传商品的图片信息，每间隔1秒上传一张图片')
   for (let i = 0; i < productList.length; i++) {
+    console.log(`上传商品图片 ${i + 1}/${productList.length}，id=${productList[i].id}`)
     for (let j = 0; j < productList[i].imgUrls.length; j++) {
+
       const cellColumn = LETTER_LIST[LETTER_LIST.indexOf(endColumn) + 1 + j]
       const cellRow = String(Number(startRow) + i)
-      console.log(`上传商品 ${i + 1}/${productList.length}，上传图片 ${j + 1}/${productList[i].imgUrls.length}`)
+      console.log(`--------------- ${j + 1}/${productList[i].imgUrls.length}`);
       await uploadImage(productList[i].imgUrls[j], cellColumn + cellRow).then()
     }
   }

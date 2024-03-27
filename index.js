@@ -5,7 +5,7 @@ import upload from './src/upload/index.js'
 
 (async () => {
   try {
-    if (config.configBrowserFlag) {
+    if (config.configBrowserFlag || process.argv.some(str => str.includes('--config')) ) {
       await configBrowser()
     } else {
       await download()
