@@ -1,5 +1,8 @@
 export const getUsefulImgUrl = (url) => {
-  const index = url.indexOf('.jpg')
+  let index = url.indexOf('.jpg')
+  if (index === -1) {
+    index = url.indexOf('.png')
+  }
   return url.slice(0, index + 4)
 }
 

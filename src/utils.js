@@ -15,3 +15,11 @@ export const getCurrentTime = () => {
   const offsetDate = new Date(offsetTime)
   return offsetDate.toISOString() // 将时间转换为 ISO 8601 格式
 }
+
+export const getRandomNumberBetween60And120 = () => {
+  const min = 60
+  const max = 120
+  const randomNumber = Math.random() * (max - min + 1) + min
+  return Math.floor(randomNumber)
+}
+

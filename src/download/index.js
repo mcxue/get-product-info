@@ -1,5 +1,5 @@
 import getProductLinkList from '../getProductLinkList/index.js'
-import { getCurrentTime, sleep } from '../utils.js'
+import { getCurrentTime, getRandomNumberBetween60And120, sleep } from '../utils.js'
 import * as cheerio from 'cheerio'
 import { getBrowser, getIdFromUrl, getPage } from './utils.js'
 import saveProductDetailList from '../saveProductDetailList/index.js'
@@ -28,9 +28,12 @@ const getProductListWithUrlList = async (urlList) => {
   const result = []
   for (let i = 0; i < urlList.length; i++) {
     const product = await getSingleProductByVisitUrl(urlList[i])
-    await sleep(1500) // 每间 1.5 秒浏览访问一次商品
-    console.log(`获取商品信息${i + 1}/${urlList.length}`)
+    console.log(`获取商品信息${i + 1}/${urlList.length} ${product.name}`)
     result.push(product)
+    const randomNumber = getRandomNumberBetween60And120()
+    console.log(`${randomNumber}秒后获取下一件商品信息，请稍后....`)
+    await sleep(getRandomNumberBetween60And120() * 1000)
+
   }
   return result
 }
